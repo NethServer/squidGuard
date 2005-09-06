@@ -1,0 +1,35 @@
+--- squid-getlist.html.1	2004-02-05 03:55:15.000000000 +0100
++++ squid-getlist.html	2005-09-05 17:47:18.000000000 +0200
+@@ -1,8 +1,16 @@
+-<title>Auto Squidguard Filter Update</title>
+-<pre>
+ #!/bin/bash
++
++ENABLED=0
++
++if [ $ENABLED == 0 ]; then exit 0; fi
++
+ #-----------------------------------------------------------------
+ #
++# -- Changed - 05 September 2005
++# --    Change by Oliver Falk <oliver@linux-kernel.at>
++#       Modified paths to work with my RPM
++#       Added ENABLED=0/1 (0 means disabled; default)
++#
+ # -- Changed - 15 June 2003
+ # --    Change 
+ #       "squidguard -C domains" to 
+@@ -55,11 +63,11 @@
+ 
+ # Give location of squid and squidguard programs
+ SQUID=/usr/sbin/squid
+-SQUIDGUARD=/usr/local/bin/squidGuard
++SQUIDGUARD=/usr/bin/squidGuard
+ # --------------------------------------------------------------
+ # BLACKDIR should be set to equal the dbhome path declaration
+ # in your squidguard.conf file
+-BLACKDIR=/var/lib/squidguard/db
++BLACKDIR=/var/lib/squidGuard
+ BLKDIRADLT=${BLACKDIR}/blacklists
+ PORN=${BLACKDIR}/blacklists/porn
+ ADULT=${BLACKDIR}/blacklists/adult

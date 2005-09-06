@@ -1,0 +1,13 @@
+--- squidGuard-1.1.4/src/Makefile.in.destdir	Fri Oct 13 19:44:15 2000
++++ squidGuard-1.1.4/src/Makefile.in	Fri Oct 13 19:45:09 2000
+@@ -97,8 +97,8 @@
+ 
+ install.bin:: squidGuard
+ 	@echo making $@ in `basename \`pwd\``
+-	@$(MKDIR) $(bindir) $(logdir) $(cfgdir)
+-	$(INSTALL_PROGRAM) squidGuard $(bindir)/squidGuard
++	@$(MKDIR) $(DESTDIR)$(bindir) $(DESTDIR)$(logdir) $(DESTDIR)$(cfgdir)
++	$(INSTALL_PROGRAM) squidGuard $(DESTDIR)$(bindir)/squidGuard
+ 
+ uninstall.bin::
+ 	@echo making $@ in `basename \`pwd\``

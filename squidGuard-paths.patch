@@ -1,0 +1,13 @@
+--- squidGuard-1.1.4/samples/sample.conf.in	Mon May 10 18:37:13 1999
++++ squidGuard-1.1.4/samples/sample.conf.in.paths	Fri Oct 13 19:47:31 2000
+@@ -2,8 +2,8 @@
+ # CONFIG FILE FOR SQUIDGUARD
+ #
+ 
+-dbhome @prefix@/squidGuard/db
+-logdir @prefix@/squidGuard/logs
++dbhome @sg_dbhome@
++logdir @sg_logdir@
+ 
+ #
+ # TIME RULES:
