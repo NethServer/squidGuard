@@ -1,0 +1,1 @@
+allow squid_t usr_t:lnk_file read;

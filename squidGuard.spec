@@ -1,12 +1,11 @@
-# $Id: squidGuard.spec,v 1.1 2005/09/06 10:50:41 oliver Exp $
+# $Id: squidGuard.spec,v 1.2 2005/09/09 12:16:10 oliver Exp $
 
-%define			_dbhomedir		%{_var}/lib/%{name}
-
-%define			_dbrpmver		%(eval "rpm -q --queryformat \"%{VERSION}\" db4")
+%define			_dbhomedir		%{_var}/%{name}/blacklists
+%define			_cgibin			/var/www/cgi-bin
 
 Name:			squidGuard
 Version:		1.2.0
-Release:		11
+Release:		12%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -17,15 +16,30 @@ Source1:		squidGuard.logrotate
 Source2:		http://ftp.teledanmark.no/pub/www/proxy/%{name}/contrib/blacklists.tar.gz
 Source3:		http://cuda.port-aransas.k12.tx.us/squid-getlist.html
 
+# K12LTSP stuff
+Source100:		squidGuard.conf
+Source101:		update_squidguard_blacklists
+Source102:		squidguard
+Source103:		transparent-proxying
+
+# SELinux (taken from K12LTSP package)
+Source200:		squidGuard.te
+Source201:		squidGuard.fc
+
 Patch0:			squidGuard-destdir.patch
 Patch1:			squidGuard-paths.patch
 Patch2:			squidguard-1.2.0-db4.patch
 Patch3:			squid-getlist.html.patch
+Patch4:			squidGuard-perlwarning.patch
+Patch5:			squidGuard-sed.patch
+
 URL:			http://www.squidguard.org/
 
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	db4-devel
 Requires:		squid
+Requires(post):	%{_bindir}/chcon
+Requires(post):	/sbin/chkconfig
 
 %description
 squidGuard can be used to 
@@ -56,10 +70,13 @@ Neither squidGuard nor Squid can be used to
 %{__cp} %{SOURCE3} .
 %patch0 -p1 -b .destdir
 %patch1 -p1 -b .paths
-%if "%{_dbrpmver}" != "4.0.14"
 %patch2 -p0 -b .db4
-%endif
 %patch3 -p0
+%patch4 -p2
+%patch5 -p1
+
+%{__cp} %{SOURCE100} ./squidGuard.conf.k12ltsp.template
+%{__cp} %{SOURCE101} ./update_squidguard_blacklists.k12ltsp.sh
 
 %build
 %configure \
@@ -67,7 +84,11 @@ Neither squidGuard nor Squid can be used to
 	--with-sg-logdir=%{_var}/log/squid \
 	--with-sg-dbhome=%{_dbhomedir}
 	
-%{__make} %{?_smp_mflags} LIBS=-ldb
+%{__make} %{?_smp_mflags}
+
+pushd contrib
+%{__make} %{?_smp_mflags}
+popd
 
 %install
 %{__rm} -rf $RPM_BUILD_ROOT
@@ -78,8 +99,20 @@ Neither squidGuard nor Squid can be used to
 %{__install} -p -D -m 0644 samples/sample.conf $RPM_BUILD_ROOT%{_sysconfdir}/squid/squidGuard.conf
 %{__install} -p -D -m 0644 %{SOURCE2} $RPM_BUILD_ROOT%{_dbhomedir}/blacklists.tar.gz
 
-# Don't use SOURCE3, but use the allready patched one #165689, also install it with perm 755 not 750
+# Don't use SOURCE3, but use the allready patched one #165689
 %{__install} -p -D -m 0755 squid-getlist.html $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/squidGuard
+
+%{__install} -p -D %{SOURCE200} $RPM_BUILD_ROOT%{_sysconfdir}/selinux/targeted/src/policy/domains/program/squidGuard.te
+%{__install} -p -D %{SOURCE201} $RPM_BUILD_ROOT%{_sysconfdir}/selinux/targeted/src/policy/file_contexts/program/squidGuard.fc
+
+%{__install} -p -d $RPM_BUILD_ROOT%{_cgibin}
+%{__install} samples/squid*cgi $RPM_BUILD_ROOT%{_cgibin}
+
+%{__install} contrib/hostbyname/hostbyname $RPM_BUILD_ROOT%{_bindir}
+%{__install} contrib/sgclean/sgclean $RPM_BUILD_ROOT%{_bindir}
+
+%{__install} -p -D -m 0755 %{SOURCE102} $RPM_BUILD_ROOT%{_initrddir}/squidGuard
+%{__install} -p -D -m 0755 %{SOURCE103} $RPM_BUILD_ROOT%{_initrddir}/transparent-proxying
 
 pushd $RPM_BUILD_ROOT%{_dbhomedir}
 tar xfz $RPM_BUILD_ROOT%{_dbhomedir}/blacklists.tar.gz
@@ -90,20 +123,71 @@ sed -i "s,dest/adult/,blacklists/porn/,g" $RPM_BUILD_ROOT%{_sysconfdir}/squid/sq
 %clean
 %{__rm} -rf $RPM_BUILD_ROOT
 
+%post
+# fix SELinux bits
+%{_bindir}/chcon -R system_u:object_r:squid_cache_t /var/squidGuard >/dev/null 2>&1
+%{_bindir}/chcon -R system_u:object_r:squid_log_t /var/log/squidGuard >/dev/null 2>&1
+
+# do we need a new config file?
+if [ -s %{_sysconfdir}/squid/squidGuard.conf ]; then
+	CONFFILE="%{_sysconfdir}/squid/squidGuard.conf.rpmnew"
+    echo "/etc/squid/squidGuard.conf created as /etc/squid/squidGuard.conf.rpmnew"
+else
+	CONFFILE="/etc/squid/squidGuard.conf"
+fi
+cat %{_docdir}/%{name}-%{version}/squidGuard.conf.k12ltsp.template | \
+	sed s/SERVERNAME/$HOSTNAME/g > $CONFFILE
+
+/sbin/chkconfig --add squidGuard
+/sbin/chkconfig --add transparent-proxying
+
+# reload SELinux policies
+echo "Loading new SELinux policy"
+pushd %{_sysconfdir}/selinux/targeted/src/policy/
+%{__make} load &> /dev/null
+popd
+
+#### End of %post
+
+%preun
+if [ $1 = 0 ] ; then
+    service squidGuard stop >/dev/null 2>&1
+    /sbin/chkconfig --del squidGuard
+	/sbin/chkconfig --del transparent-proxying
+fi
+
 %files
 %defattr(-,root,root)
 %doc samples/*.conf
 %doc samples/*.cgi
 %doc samples/dest/blacklists.tar.gz
-%doc COPYING GPL
+%doc COPYING GPL 
 %doc doc/*.txt doc/*.html doc/*.gif
+%doc squidGuard.conf.k12ltsp.template
 %{_bindir}/*
 %config(noreplace) %{_sysconfdir}/squid/squidGuard.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/squidGuard
 %config(noreplace) %{_sysconfdir}/cron.daily/squidGuard
 %{_dbhomedir}/
+%{_sysconfdir}/selinux/targeted/src/policy/domains/program/squidGuard.te
+%{_sysconfdir}/selinux/targeted/src/policy/file_contexts/program/squidGuard.fc
+%attr(07550,root,root) %{_cgibin}/*.cgi
+%{_initrddir}/squidGuard
+%{_initrddir}/transparent-proxying
 
 %changelog
+* Fri Sep 09 2005 Oliver Falk <oliver@linux-kernel.at>		- 1.2.0-12
+- Make it K12LTSP compatible, so a possible upgrade doesn't break
+  anything/much...
+  - Add SELinux stuff
+  - Move dbdir to /var/squidGuard/blacklists, instead of /var/lib/squidGuard
+  - Added update script and template config from/for K12
+  - Add perlwarnings and sed patch
+  - Install cgis in /var/www/cgi-bin
+  - Added initrd stuff
+- Remove questionable -ldb from make
+- Remove questionable db version check
+
 * Tue Sep 06 2005 Oliver Falk <oliver@linux-kernel.at>		- 1.2.0-11
 - More bugs from Bug #165689
   Install cron script with perm 755

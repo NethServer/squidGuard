@@ -1,0 +1,5 @@
+# squid
+
+/usr/sbin/squidGuard   --        system_u:object_r:squid_exec_t
+/var/log/squidGuard(/.*)?        system_u:object_r:squid_log_t
+/var/squidGuard/blacklists(/.*)? system_u:object_r:squid_cache_t

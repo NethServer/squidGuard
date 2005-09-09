@@ -1,0 +1,8 @@
+--- ./squidGuard-1.2.0/samples/squidGuard.cgi.in.orig   2003-04-12 14:58:38.000000000 -0700
++++ ./squidGuard-1.2.0/samples/squidGuard.cgi.in    2003-04-12 14:58:59.000000000 -0700
+@@ -1,4 +1,4 @@
+-#! @PERL@ -w
++#! @PERL@ 
+ #
+ # Explain to the user that the URL is blocked and by which rule set
+ #
