@@ -1,11 +1,11 @@
-# $Id: squidGuard.spec,v 1.3 2006/08/30 01:21:44 jwb Exp $
+# $Id: squidGuard.spec,v 1.4 2006/08/30 01:24:19 jwb Exp $
 
 %define			_dbhomedir		%{_var}/%{name}/blacklists
 %define			_cgibin			/var/www/cgi-bin
 
 Name:			squidGuard
 Version:		1.2.0
-Release:		13%{?dist}
+Release:		14%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -177,6 +177,9 @@ fi
 %{_initrddir}/transparent-proxying
 
 %changelog
+* Tue Aug 29 2006 John Berninger <jwb at redhat dot com>	1.2.0-14
+- Bump release 'cause I forgot to add a patch file that's required
+
 * Tue Aug 29 2006 John Berninger <jwb at redhat dot com>	1.2.0-13
 - general updates to confirm build on FC5/FC6
 - updates to BuildRequires

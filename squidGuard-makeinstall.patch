@@ -1,0 +1,14 @@
+diff -ruN squidGuard-1.2.0.orig/src/Makefile.in squidGuard-1.2.0/src/Makefile.in
+--- squidGuard-1.2.0.orig/src/Makefile.in	2006-08-29 21:05:21.000000000 -0400
++++ squidGuard-1.2.0/src/Makefile.in	2006-08-29 21:15:33.000000000 -0400
+@@ -105,8 +105,8 @@
+ 
+ install.bin:: squidGuard
+ 	@echo making $@ in `basename \`pwd\``
+-	@$(MKDIR) $(bindir) $(logdir) $(cfgdir)
+-	$(INSTALL_PROGRAM) squidGuard $(bindir)/squidGuard
++	@$(MKDIR) $(DESTDIR)/$(bindir) $(DESTDIR)/$(logdir) $(DESTDIR)/$(cfgdir)
++	$(INSTALL_PROGRAM) squidGuard $(DESTDIR)/$(bindir)/squidGuard
+ 
+ uninstall.bin::
+ 	@echo making $@ in `basename \`pwd\``
