@@ -1,11 +1,11 @@
-# $Id: squidGuard.spec,v 1.2 2005/09/09 12:16:10 oliver Exp $
+# $Id: squidGuard.spec,v 1.3 2006/08/30 01:21:44 jwb Exp $
 
 %define			_dbhomedir		%{_var}/%{name}/blacklists
 %define			_cgibin			/var/www/cgi-bin
 
 Name:			squidGuard
 Version:		1.2.0
-Release:		12%{?dist}
+Release:		13%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -26,17 +26,17 @@ Source103:		transparent-proxying
 Source200:		squidGuard.te
 Source201:		squidGuard.fc
 
-Patch0:			squidGuard-destdir.patch
+Patch0:			squidGuard-upstream.patch
 Patch1:			squidGuard-paths.patch
-Patch2:			squidguard-1.2.0-db4.patch
-Patch3:			squid-getlist.html.patch
-Patch4:			squidGuard-perlwarning.patch
-Patch5:			squidGuard-sed.patch
+Patch2:			squid-getlist.html.patch
+Patch3:			squidGuard-perlwarning.patch
+Patch4:			squidGuard-sed.patch
+Patch5:			squidGuard-makeinstall.patch
 
 URL:			http://www.squidguard.org/
 
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:	db4-devel
+BuildRequires:	db4-devel, bison, byacc, openldap-devel, flex
 Requires:		squid
 Requires(post):	%{_bindir}/chcon
 Requires(post):	/sbin/chkconfig
@@ -68,12 +68,12 @@ Neither squidGuard nor Squid can be used to
 %prep
 %setup -q
 %{__cp} %{SOURCE3} .
-%patch0 -p1 -b .destdir
+%patch0 -p1
 %patch1 -p1 -b .paths
-%patch2 -p0 -b .db4
-%patch3 -p0
-%patch4 -p2
-%patch5 -p1
+%patch2 -p0
+%patch3 -p2
+%patch4 -p1
+%patch5	-p1
 
 %{__cp} %{SOURCE100} ./squidGuard.conf.k12ltsp.template
 %{__cp} %{SOURCE101} ./update_squidguard_blacklists.k12ltsp.sh
@@ -84,7 +84,8 @@ Neither squidGuard nor Squid can be used to
 	--with-sg-logdir=%{_var}/log/squid \
 	--with-sg-dbhome=%{_dbhomedir}
 	
-%{__make} %{?_smp_mflags}
+#%{__make} %{?_smp_mflags}
+%{__make}
 
 pushd contrib
 %{__make} %{?_smp_mflags}
@@ -176,6 +177,10 @@ fi
 %{_initrddir}/transparent-proxying
 
 %changelog
+* Tue Aug 29 2006 John Berninger <jwb at redhat dot com>	1.2.0-13
+- general updates to confirm build on FC5/FC6
+- updates to BuildRequires
+
 * Fri Sep 09 2005 Oliver Falk <oliver@linux-kernel.at>		- 1.2.0-12
 - Make it K12LTSP compatible, so a possible upgrade doesn't break
   anything/much...
