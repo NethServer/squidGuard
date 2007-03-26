@@ -1,11 +1,12 @@
-# $Id: squidGuard.spec,v 1.4 2006/08/30 01:24:19 jwb Exp $
+# $Id: squidGuard.spec,v 1.5 2007/03/26 14:46:39 jwb Exp $
 
+%define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
 %define			_cgibin			/var/www/cgi-bin
 
 Name:			squidGuard
 Version:		1.2.0
-Release:		14%{?dist}
+Release:		15%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -169,7 +170,7 @@ fi
 %config(noreplace) %{_sysconfdir}/squid/squidGuard.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/squidGuard
 %config(noreplace) %{_sysconfdir}/cron.daily/squidGuard
-%{_dbhomedir}/
+%{_dbtopdir}/
 %{_sysconfdir}/selinux/targeted/src/policy/domains/program/squidGuard.te
 %{_sysconfdir}/selinux/targeted/src/policy/file_contexts/program/squidGuard.fc
 %attr(07550,root,root) %{_cgibin}/*.cgi
@@ -177,6 +178,9 @@ fi
 %{_initrddir}/transparent-proxying
 
 %changelog
+* Mon Mar 26 2007 John Berninger <jwb at redhat dot com>	1.2.0-15
+- Assert ownership of /var/squidGuard - bz 233915
+
 * Tue Aug 29 2006 John Berninger <jwb at redhat dot com>	1.2.0-14
 - Bump release 'cause I forgot to add a patch file that's required
 
