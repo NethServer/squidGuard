@@ -1,4 +1,4 @@
-# $Id: squidGuard.spec,v 1.5 2007/03/26 14:46:39 jwb Exp $
+# $Id: squidGuard.spec,v 1.6 2007/08/29 14:45:16 jwb Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -10,7 +10,7 @@ Release:		15%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
-License:		GPL
+License:		GPLv2
 
 Source0:		http://ftp.teledanmark.no/pub/www/proxy/%{name}/%{name}-%{version}.tar.gz
 Source1:		squidGuard.logrotate
