@@ -1,4 +1,4 @@
-# $Id: squidGuard.spec,v 1.6 2007/08/29 14:45:16 jwb Exp $
+# $Id: squidGuard.spec,v 1.7 2007/11/16 23:06:55 jwb Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -6,7 +6,7 @@
 
 Name:			squidGuard
 Version:		1.2.0
-Release:		15%{?dist}
+Release:		16%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -173,11 +173,14 @@ fi
 %{_dbtopdir}/
 %{_sysconfdir}/selinux/targeted/src/policy/domains/program/squidGuard.te
 %{_sysconfdir}/selinux/targeted/src/policy/file_contexts/program/squidGuard.fc
-%attr(07550,root,root) %{_cgibin}/*.cgi
+%attr(0755,root,root) %{_cgibin}/*.cgi
 %{_initrddir}/squidGuard
 %{_initrddir}/transparent-proxying
 
 %changelog
+* Fri Nov 16 2007 John Berninger <john at ncphotography dot com> 1.2.0-16
+- Fix perms on cgi-bin files
+
 * Mon Mar 26 2007 John Berninger <jwb at redhat dot com>	1.2.0-15
 - Assert ownership of /var/squidGuard - bz 233915
 
