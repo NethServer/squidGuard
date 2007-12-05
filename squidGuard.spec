@@ -1,4 +1,4 @@
-# $Id: squidGuard.spec,v 1.7 2007/11/16 23:06:55 jwb Exp $
+# $Id: squidGuard.spec,v 1.8 2007/12/05 22:15:16 jkeating Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -6,7 +6,7 @@
 
 Name:			squidGuard
 Version:		1.2.0
-Release:		16%{?dist}
+Release:		17%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -178,6 +178,9 @@ fi
 %{_initrddir}/transparent-proxying
 
 %changelog
+* Wed Dec 05 2007 Release Engineering <rel-eng at fedoraproject dot org> - 1.2.0-17
+ - Rebuild for deps
+
 * Fri Nov 16 2007 John Berninger <john at ncphotography dot com> 1.2.0-16
 - Fix perms on cgi-bin files
 
