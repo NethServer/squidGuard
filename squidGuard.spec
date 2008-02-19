@@ -1,4 +1,4 @@
-# $Id: squidGuard.spec,v 1.8 2007/12/05 22:15:16 jkeating Exp $
+# $Id: squidGuard.spec,v 1.9 2008/02/19 07:30:54 jkeating Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -6,7 +6,7 @@
 
 Name:			squidGuard
 Version:		1.2.0
-Release:		17%{?dist}
+Release:		18%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -178,6 +178,9 @@ fi
 %{_initrddir}/transparent-proxying
 
 %changelog
+* Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 1.2.0-18
+- Autorebuild for GCC 4.3
+
 * Wed Dec 05 2007 Release Engineering <rel-eng at fedoraproject dot org> - 1.2.0-17
  - Rebuild for deps
 
