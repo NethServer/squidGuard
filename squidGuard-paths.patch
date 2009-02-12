@@ -5,7 +5,7 @@
  #
  
 -dbhome @prefix@/squidGuard/db
--logdir @prefix@/squidGuard/logs
+-logdir @prefix@/squidGuard/log
 +dbhome @sg_dbhome@
 +logdir @sg_logdir@
  

@@ -1,12 +1,13 @@
-# $Id: squidGuard.spec,v 1.9 2008/02/19 07:30:54 jkeating Exp $
+%define _default_patch_fuzz 2
+# $Id: squidGuard.spec,v 1.10 2009/02/12 13:49:14 limb Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
 %define			_cgibin			/var/www/cgi-bin
 
 Name:			squidGuard
-Version:		1.2.0
-Release:		18%{?dist}
+Version:		1.2.1
+Release:		1%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -27,7 +28,7 @@ Source103:		transparent-proxying
 Source200:		squidGuard.te
 Source201:		squidGuard.fc
 
-Patch0:			squidGuard-upstream.patch
+#Patch0:			squidGuard-upstream.patch
 Patch1:			squidGuard-paths.patch
 Patch2:			squid-getlist.html.patch
 Patch3:			squidGuard-perlwarning.patch
@@ -69,7 +70,7 @@ Neither squidGuard nor Squid can be used to
 %prep
 %setup -q
 %{__cp} %{SOURCE3} .
-%patch0 -p1
+#%patch0 -p1
 %patch1 -p1 -b .paths
 %patch2 -p0
 %patch3 -p2
@@ -95,7 +96,9 @@ popd
 %install
 %{__rm} -rf $RPM_BUILD_ROOT
 
-%{__make} DESTDIR=$RPM_BUILD_ROOT install
+#%{__make} DESTDIR=$RPM_BUILD_ROOT install
+# This broke as of 1.2.1.
+%{__install} -p -D -m 0755 src/squidGuard $RPM_BUILD_ROOT%{_bindir}/squidGuard
 
 %{__install} -p -D -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/squidGuard
 %{__install} -p -D -m 0644 samples/sample.conf $RPM_BUILD_ROOT%{_sysconfdir}/squid/squidGuard.conf
@@ -178,6 +181,11 @@ fi
 %{_initrddir}/transparent-proxying
 
 %changelog
+* Wed Feb 11 2009 Jon Ciesla <limb@jcomserv.net> - 1.2.1-1
+- Update to 1.2.1, fix sg-2008-06-13 BZ 245377, 452467.
+- Dropped upstream patch.
+- Updated blacklists.
+
 * Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 1.2.0-18
 - Autorebuild for GCC 4.3
 
