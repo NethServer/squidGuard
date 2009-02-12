@@ -1,5 +1,5 @@
 %define _default_patch_fuzz 2
-# $Id: squidGuard.spec,v 1.10 2009/02/12 13:49:14 limb Exp $
+# $Id: squidGuard.spec,v 1.11 2009/02/12 14:33:23 limb Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -7,7 +7,7 @@
 
 Name:			squidGuard
 Version:		1.2.1
-Release:		1%{?dist}
+Release:		2%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -34,6 +34,7 @@ Patch2:			squid-getlist.html.patch
 Patch3:			squidGuard-perlwarning.patch
 Patch4:			squidGuard-sed.patch
 Patch5:			squidGuard-makeinstall.patch
+Patch6:			squidGuard-1.2.1-SG-2008-06-13.patch
 
 URL:			http://www.squidguard.org/
 
@@ -76,6 +77,7 @@ Neither squidGuard nor Squid can be used to
 %patch3 -p2
 %patch4 -p1
 %patch5	-p1
+%patch6 -p0
 
 %{__cp} %{SOURCE100} ./squidGuard.conf.k12ltsp.template
 %{__cp} %{SOURCE101} ./update_squidguard_blacklists.k12ltsp.sh
@@ -182,7 +184,10 @@ fi
 
 %changelog
 * Wed Feb 11 2009 Jon Ciesla <limb@jcomserv.net> - 1.2.1-1
-- Update to 1.2.1, fix sg-2008-06-13 BZ 245377, 452467.
+- Fix sg-2008-06-13, BZ 452467.
+
+* Wed Feb 11 2009 Jon Ciesla <limb@jcomserv.net> - 1.2.1-1
+- Update to 1.2.1,  BZ 245377.
 - Dropped upstream patch.
 - Updated blacklists.
 
