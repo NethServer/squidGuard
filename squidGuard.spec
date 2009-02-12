@@ -1,5 +1,5 @@
 %define _default_patch_fuzz 2
-# $Id: squidGuard.spec,v 1.11 2009/02/12 14:33:23 limb Exp $
+# $Id: squidGuard.spec,v 1.12 2009/02/12 18:02:56 limb Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -183,7 +183,7 @@ fi
 %{_initrddir}/transparent-proxying
 
 %changelog
-* Wed Feb 11 2009 Jon Ciesla <limb@jcomserv.net> - 1.2.1-1
+* Wed Feb 11 2009 Jon Ciesla <limb@jcomserv.net> - 1.2.1-2
 - Fix sg-2008-06-13, BZ 452467.
 
 * Wed Feb 11 2009 Jon Ciesla <limb@jcomserv.net> - 1.2.1-1
