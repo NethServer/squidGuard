@@ -1,0 +1,27 @@
+--- src/sgDiv.c.in.orig	2007-11-03 08:59:49.000000000 -0500
++++ src/sgDiv.c.in	2008-06-13 12:01:43.000000000 -0500
+@@ -94,6 +94,7 @@
+   int i = 0;
+   char c;
+   int report_once = 1;
++  int trailingdot = 1;
+   size_t strsz;
+   int ndx = 0;
+   
+@@ -148,6 +149,16 @@
+             report_once--;
+           }
+       }
++      else if ('.' == p[ndx] && '/' == p[ndx+1] && trailingdot == 0) {
++      /* If the domain has trailing dot, remove (problem found with squid 3.0 stable1-5) */
++      /* if this char is a dot and the next char is a slash, then shift the rest of the string left one char */
++      /* We do this only the first time it is encountered. */
++         trailingdot++;
++         size_t sz = strlen(p+ndx+1);
++         strncpy(p+ndx,p+ndx+1, sz);
++         p[ndx+sz] = '\0';
++         @NOLOG1@ sgLogError("Warning: Possible bypass attempt. Found a trailing dot in the domain name: %s", s->orig); @NOLOG2@
++      }
+       else
+       {
+         /* increment the string indexer */
