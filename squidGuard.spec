@@ -1,5 +1,5 @@
 %define _default_patch_fuzz 2
-# $Id: squidGuard.spec,v 1.14 2009/02/18 17:27:28 limb Exp $
+# $Id: squidGuard.spec,v 1.15 2009/02/18 18:04:38 limb Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -88,8 +88,8 @@ Neither squidGuard nor Squid can be used to
 	--with-sg-config=%{_sysconfdir}/squid/squidGuard.conf \
 	--with-sg-logdir=%{_var}/log/squid \
 	--with-sg-dbhome=%{_dbhomedir} \
-	--with-db-inc=/usr/include/db4.6.21 \
-	--with-db-lib=/usr/lib/db4.6.21
+	--with-db-inc=%{_includedir}/db4.6.21 \
+	--with-db-lib=%{_libdir}/db4.6.21
 	
 #%{__make} %{?_smp_mflags}
 %{__make}
