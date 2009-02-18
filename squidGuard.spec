@@ -1,12 +1,12 @@
 %define _default_patch_fuzz 2
-# $Id: squidGuard.spec,v 1.13 2009/02/17 14:13:29 limb Exp $
+# $Id: squidGuard.spec,v 1.14 2009/02/18 17:27:28 limb Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
 %define			_cgibin			/var/www/cgi-bin
 
 Name:			squidGuard
-Version:		1.3
+Version:		1.4
 Release:		1%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
@@ -34,12 +34,13 @@ Patch2:			squid-getlist.html.patch
 Patch3:			squidGuard-perlwarning.patch
 #Patch4:			squidGuard-sed.patch
 Patch5:			squidGuard-makeinstall.patch
-Patch6:			squidGuard-1.3-SG-2008-06-13.patch
+#Patch6:			squidGuard-1.3-SG-2008-06-13.patch
 
 URL:			http://www.squidguard.org/
 
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:	db4-devel, bison, byacc, openldap-devel, flex
+BuildRequires:	bison, byacc, openldap-devel, flex, compat-db46
+#put db4-devel back and remove compat-db46 once release > 1.4
 Requires:		squid
 Requires(post):	%{_bindir}/chcon
 Requires(post):	/sbin/chkconfig
@@ -77,7 +78,7 @@ Neither squidGuard nor Squid can be used to
 %patch3 -p2
 #%patch4 -p1
 %patch5	-p1
-%patch6 -p0
+#%patch6 -p0
 
 %{__cp} %{SOURCE100} ./squidGuard.conf.k12ltsp.template
 %{__cp} %{SOURCE101} ./update_squidguard_blacklists.k12ltsp.sh
@@ -86,7 +87,9 @@ Neither squidGuard nor Squid can be used to
 %configure \
 	--with-sg-config=%{_sysconfdir}/squid/squidGuard.conf \
 	--with-sg-logdir=%{_var}/log/squid \
-	--with-sg-dbhome=%{_dbhomedir}
+	--with-sg-dbhome=%{_dbhomedir} \
+	--with-db-inc=/usr/include/db4.6.21 \
+	--with-db-lib=/usr/lib/db4.6.21
 	
 #%{__make} %{?_smp_mflags}
 %{__make}
@@ -183,6 +186,10 @@ fi
 %{_initrddir}/transparent-proxying
 
 %changelog
+* Wed Feb 18 2009 Jon Ciesla <limb@jcomserv.net> - 1.4-1
+- Update to 1.4, BZ 485530.
+- Building against compat-db46 until next version.
+
 * Wed Feb 11 2009 Jon Ciesla <limb@jcomserv.net> - 1.3-1
 - Update to 1.3.
 - Dropped paths, sed patches, applied upstream.
