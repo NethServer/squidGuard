@@ -1,5 +1,5 @@
 %define _default_patch_fuzz 2
-# $Id: squidGuard.spec,v 1.16 2009/02/24 16:19:19 limb Exp $
+# $Id: squidGuard.spec,v 1.17 2009/02/24 16:33:55 limb Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -7,7 +7,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		2%{?dist}
+Release:		3%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -42,7 +42,7 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	bison, byacc, openldap-devel, flex, compat-db46
 #put db4-devel back and remove compat-db46 once release > 1.4
 Requires:		squid
-Requires(post):	%{_bindir}/chcon
+#Requires(post):	%{_bindir}/chcon
 Requires(post):	/sbin/chkconfig
 
 %description
@@ -186,6 +186,9 @@ fi
 %{_initrddir}/transparent-proxying
 
 %changelog
+* Tue Feb 24 2009 Jon Ciesla <limb@jcomserv.net> - 1.4-3
+- Drop chcon Req.
+
 * Mon Feb 23 2009 Jon Ciesla <limb@jcomserv.net> - 1.4-2
 - Dropping selinux policy and chcon, BZ 486634.
 - Fixed URL of Source0.
