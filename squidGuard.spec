@@ -1,5 +1,5 @@
 %define _default_patch_fuzz 2
-# $Id: squidGuard.spec,v 1.15 2009/02/18 18:04:38 limb Exp $
+# $Id: squidGuard.spec,v 1.16 2009/02/24 16:19:19 limb Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -7,13 +7,13 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		1%{?dist}
+Release:		2%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
 License:		GPLv2
 
-Source0:		http://ftp.teledanmark.no/pub/www/proxy/%{name}/%{name}-%{version}.tar.gz
+Source0:		http://www.squidguard.org/Downloads/squidGuard-%{version}.tar.gz
 Source1:		squidGuard.logrotate
 Source2:		http://ftp.teledanmark.no/pub/www/proxy/%{name}/contrib/blacklists.tar.gz
 Source3:		http://cuda.port-aransas.k12.tx.us/squid-getlist.html
@@ -25,8 +25,8 @@ Source102:		squidguard
 Source103:		transparent-proxying
 
 # SELinux (taken from K12LTSP package)
-Source200:		squidGuard.te
-Source201:		squidGuard.fc
+#Source200:		squidGuard.te
+#Source201:		squidGuard.fc
 
 #Patch0:			squidGuard-upstream.patch
 #Patch1:			squidGuard-paths.patch
@@ -112,8 +112,8 @@ popd
 # Don't use SOURCE3, but use the allready patched one #165689
 %{__install} -p -D -m 0755 squid-getlist.html $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/squidGuard
 
-%{__install} -p -D %{SOURCE200} $RPM_BUILD_ROOT%{_sysconfdir}/selinux/targeted/src/policy/domains/program/squidGuard.te
-%{__install} -p -D %{SOURCE201} $RPM_BUILD_ROOT%{_sysconfdir}/selinux/targeted/src/policy/file_contexts/program/squidGuard.fc
+#%{__install} -p -D %{SOURCE200} $RPM_BUILD_ROOT%{_sysconfdir}/selinux/targeted/src/policy/domains/program/squidGuard.te
+#%{__install} -p -D %{SOURCE201} $RPM_BUILD_ROOT%{_sysconfdir}/selinux/targeted/src/policy/file_contexts/program/squidGuard.fc
 
 %{__install} -p -d $RPM_BUILD_ROOT%{_cgibin}
 %{__install} samples/squid*cgi $RPM_BUILD_ROOT%{_cgibin}
@@ -135,8 +135,8 @@ sed -i "s,dest/adult/,blacklists/porn/,g" $RPM_BUILD_ROOT%{_sysconfdir}/squid/sq
 
 %post
 # fix SELinux bits
-%{_bindir}/chcon -R system_u:object_r:squid_cache_t /var/squidGuard >/dev/null 2>&1
-%{_bindir}/chcon -R system_u:object_r:squid_log_t /var/log/squidGuard >/dev/null 2>&1
+#%{_bindir}/chcon -R system_u:object_r:squid_cache_t /var/squidGuard >/dev/null 2>&1
+#%{_bindir}/chcon -R system_u:object_r:squid_log_t /var/log/squidGuard >/dev/null 2>&1
 
 # do we need a new config file?
 if [ -s %{_sysconfdir}/squid/squidGuard.conf ]; then
@@ -152,10 +152,10 @@ cat %{_docdir}/%{name}-%{version}/squidGuard.conf.k12ltsp.template | \
 /sbin/chkconfig --add transparent-proxying
 
 # reload SELinux policies
-echo "Loading new SELinux policy"
-pushd %{_sysconfdir}/selinux/targeted/src/policy/
-%{__make} load &> /dev/null
-popd
+#echo "Loading new SELinux policy"
+#pushd %{_sysconfdir}/selinux/targeted/src/policy/
+#%{__make} load &> /dev/null
+#popd
 
 #### End of %post
 
@@ -179,13 +179,17 @@ fi
 %config(noreplace) %{_sysconfdir}/logrotate.d/squidGuard
 %config(noreplace) %{_sysconfdir}/cron.daily/squidGuard
 %{_dbtopdir}/
-%{_sysconfdir}/selinux/targeted/src/policy/domains/program/squidGuard.te
-%{_sysconfdir}/selinux/targeted/src/policy/file_contexts/program/squidGuard.fc
+#%{_sysconfdir}/selinux/targeted/src/policy/domains/program/squidGuard.te
+#%{_sysconfdir}/selinux/targeted/src/policy/file_contexts/program/squidGuard.fc
 %attr(0755,root,root) %{_cgibin}/*.cgi
 %{_initrddir}/squidGuard
 %{_initrddir}/transparent-proxying
 
 %changelog
+* Mon Feb 23 2009 Jon Ciesla <limb@jcomserv.net> - 1.4-2
+- Dropping selinux policy and chcon, BZ 486634.
+- Fixed URL of Source0.
+
 * Wed Feb 18 2009 Jon Ciesla <limb@jcomserv.net> - 1.4-1
 - Update to 1.4, BZ 485530.
 - Building against compat-db46 until next version.
