@@ -1,5 +1,5 @@
 %define _default_patch_fuzz 2
-# $Id: squidGuard.spec,v 1.17 2009/02/24 16:33:55 limb Exp $
+# $Id: squidGuard.spec,v 1.18 2009/03/05 19:57:52 limb Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -7,7 +7,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		3%{?dist}
+Release:		4%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -186,6 +186,9 @@ fi
 %{_initrddir}/transparent-proxying
 
 %changelog
+* Thu Mar 05 2009 Jon Ciesla <limb@jcomserv.net> - 1.4-4
+- Initscript cleanup, BZ 247065.
+
 * Tue Feb 24 2009 Jon Ciesla <limb@jcomserv.net> - 1.4-3
 - Drop chcon Req.
 
