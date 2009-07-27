@@ -1,5 +1,5 @@
 %define _default_patch_fuzz 2
-# $Id: squidGuard.spec,v 1.18 2009/03/05 19:57:52 limb Exp $
+# $Id: squidGuard.spec,v 1.19 2009/07/27 04:45:39 jkeating Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -7,7 +7,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		4%{?dist}
+Release:		5%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -186,6 +186,9 @@ fi
 %{_initrddir}/transparent-proxying
 
 %changelog
+* Sun Jul 26 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.4-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
+
 * Thu Mar 05 2009 Jon Ciesla <limb@jcomserv.net> - 1.4-4
 - Initscript cleanup, BZ 247065.
 
