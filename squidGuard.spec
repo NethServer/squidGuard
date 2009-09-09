@@ -1,5 +1,5 @@
 %define _default_patch_fuzz 2
-# $Id: squidGuard.spec,v 1.19 2009/07/27 04:45:39 jkeating Exp $
+# $Id: squidGuard.spec,v 1.20 2009/09/09 17:51:25 limb Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -7,7 +7,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		5%{?dist}
+Release:		6%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -130,6 +130,8 @@ popd
 
 sed -i "s,dest/adult/,blacklists/porn/,g" $RPM_BUILD_ROOT%{_sysconfdir}/squid/squidGuard.conf
 
+%{__install} -p -D -m 0644 samples/babel.* $RPM_BUILD_ROOT%{_cgibin}
+
 %clean
 %{__rm} -rf $RPM_BUILD_ROOT
 
@@ -182,10 +184,14 @@ fi
 #%{_sysconfdir}/selinux/targeted/src/policy/domains/program/squidGuard.te
 #%{_sysconfdir}/selinux/targeted/src/policy/file_contexts/program/squidGuard.fc
 %attr(0755,root,root) %{_cgibin}/*.cgi
+%{_cgibin}/babel.*
 %{_initrddir}/squidGuard
 %{_initrddir}/transparent-proxying
 
 %changelog
+* Wed Sep 09 2009 Jon Ciesla <limb@jcomserv.net> - 1.4-6
+- Include babel files, BZ 522038.
+
 * Sun Jul 26 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.4-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
 
