@@ -1,5 +1,5 @@
 %define _default_patch_fuzz 2
-# $Id: squidGuard.spec,v 1.20 2009/09/09 17:51:25 limb Exp $
+# $Id: squidGuard.spec,v 1.21 2009/10/21 19:35:22 limb Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -7,7 +7,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		6%{?dist}
+Release:		7%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -15,7 +15,7 @@ License:		GPLv2
 
 Source0:		http://www.squidguard.org/Downloads/squidGuard-%{version}.tar.gz
 Source1:		squidGuard.logrotate
-Source2:		http://ftp.teledanmark.no/pub/www/proxy/%{name}/contrib/blacklists.tar.gz
+Source2:		http://squidguard.mesd.k12.or.us/blacklists.tgz
 Source3:		http://cuda.port-aransas.k12.tx.us/squid-getlist.html
 
 # K12LTSP stuff
@@ -86,7 +86,7 @@ Neither squidGuard nor Squid can be used to
 %build
 %configure \
 	--with-sg-config=%{_sysconfdir}/squid/squidGuard.conf \
-	--with-sg-logdir=%{_var}/log/squid \
+	--with-sg-logdir=%{_var}/log/squidGuard \
 	--with-sg-dbhome=%{_dbhomedir} \
 	--with-db-inc=%{_includedir}/db4.6.21 \
 	--with-db-lib=%{_libdir}/db4.6.21
@@ -107,7 +107,7 @@ popd
 
 %{__install} -p -D -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/squidGuard
 %{__install} -p -D -m 0644 samples/sample.conf $RPM_BUILD_ROOT%{_sysconfdir}/squid/squidGuard.conf
-%{__install} -p -D -m 0644 %{SOURCE2} $RPM_BUILD_ROOT%{_dbhomedir}/blacklists.tar.gz
+%{__install} -p -D -m 0644 %{SOURCE2} $RPM_BUILD_ROOT%{_dbtopdir}/blacklists.tar.gz
 
 # Don't use SOURCE3, but use the allready patched one #165689
 %{__install} -p -D -m 0755 squid-getlist.html $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/squidGuard
@@ -124,13 +124,17 @@ popd
 %{__install} -p -D -m 0755 %{SOURCE102} $RPM_BUILD_ROOT%{_initrddir}/squidGuard
 %{__install} -p -D -m 0755 %{SOURCE103} $RPM_BUILD_ROOT%{_initrddir}/transparent-proxying
 
-pushd $RPM_BUILD_ROOT%{_dbhomedir}
-tar xfz $RPM_BUILD_ROOT%{_dbhomedir}/blacklists.tar.gz
-popd
+#pushd $RPM_BUILD_ROOT%{_dbhomedir}
+tar xfz $RPM_BUILD_ROOT%{_dbtopdir}/blacklists.tar.gz
+#popd
 
 sed -i "s,dest/adult/,blacklists/porn/,g" $RPM_BUILD_ROOT%{_sysconfdir}/squid/squidGuard.conf
 
 %{__install} -p -D -m 0644 samples/babel.* $RPM_BUILD_ROOT%{_cgibin}
+
+mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/squidGuard
+mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/squid
+ln -s ../squidGuard/squidGuard.log  $RPM_BUILD_ROOT%{_localstatedir}/log/squid/squidGuard.log
 
 %clean
 %{__rm} -rf $RPM_BUILD_ROOT
@@ -184,11 +188,19 @@ fi
 #%{_sysconfdir}/selinux/targeted/src/policy/domains/program/squidGuard.te
 #%{_sysconfdir}/selinux/targeted/src/policy/file_contexts/program/squidGuard.fc
 %attr(0755,root,root) %{_cgibin}/*.cgi
+%config(noreplace) %{_cgibin}/squidGuard.cgi
 %{_cgibin}/babel.*
 %{_initrddir}/squidGuard
 %{_initrddir}/transparent-proxying
+%{_localstatedir}/log/squidGuard
+%{_localstatedir}/log/squid/squidGuard.log
 
 %changelog
+* Thu Sep 24 2009 Jon Ciesla <limb@jcomserv.net> - 1.4-7
+- Make squidGuard.cgi config(noreplace)
+- Relocated logs, updated logrotate file.
+- Updated blacklist URL.
+
 * Wed Sep 09 2009 Jon Ciesla <limb@jcomserv.net> - 1.4-6
 - Include babel files, BZ 522038.
 
