@@ -1,5 +1,5 @@
 %define _default_patch_fuzz 2
-# $Id: squidGuard.spec,v 1.21 2009/10/21 19:35:22 limb Exp $
+# $Id: squidGuard.spec,v 1.22 2009/10/26 13:30:17 limb Exp $
 
 %define			_dbtopdir		%{_var}/%{name}
 %define			_dbhomedir		%{_var}/%{name}/blacklists
@@ -7,7 +7,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		7%{?dist}
+Release:		8%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -35,6 +35,8 @@ Patch3:			squidGuard-perlwarning.patch
 #Patch4:			squidGuard-sed.patch
 Patch5:			squidGuard-makeinstall.patch
 #Patch6:			squidGuard-1.3-SG-2008-06-13.patch
+Patch7:			squidGuard-1.4-20091015.patch
+Patch8:			squidGuard-1.4-20091019.patch
 
 URL:			http://www.squidguard.org/
 
@@ -79,6 +81,8 @@ Neither squidGuard nor Squid can be used to
 #%patch4 -p1
 %patch5	-p1
 #%patch6 -p0
+%patch7 -p0
+%patch8 -p0
 
 %{__cp} %{SOURCE100} ./squidGuard.conf.k12ltsp.template
 %{__cp} %{SOURCE101} ./update_squidguard_blacklists.k12ltsp.sh
@@ -196,6 +200,9 @@ fi
 %{_localstatedir}/log/squid/squidGuard.log
 
 %changelog
+* Mon Oct 26 2009 Jon Ciesla <limb@jcomserv.net> - 1.4-8
+- Applying upstream patches for CVE-2009-3700, BZ 530862.
+
 * Thu Sep 24 2009 Jon Ciesla <limb@jcomserv.net> - 1.4-7
 - Make squidGuard.cgi config(noreplace)
 - Relocated logs, updated logrotate file.
@@ -225,7 +232,7 @@ fi
 - Update to 1.3.
 - Dropped paths, sed patches, applied upstream.
 - New SG-2008-06-13 patch.
-
+ 
 * Wed Feb 11 2009 Jon Ciesla <limb@jcomserv.net> - 1.2.1-2
 - Fix sg-2008-06-13, BZ 452467.
 

@@ -1,0 +1,20 @@
+--- src/sgLog.c	2007-11-16 10:58:32.000000000 -0600
++++ src/sgLog.c	2009-10-15 14:25:14.000000000 -0500
+@@ -5 +5 @@
+-  This software product, squidGuard, is copyrighted (C) 1998-2007
++  This software product, squidGuard, is copyrighted (C) 1998-2009
+@@ -58,2 +58,2 @@
+-  if(vsprintf(msg, format, ap) > (MAX_BUF - 1)) 
+-    fprintf(stderr,"overflow in vsprintf (sgLog): %s",strerror(errno));
++  if(vsnprintf(msg, MAX_BUF, format, ap) > (MAX_BUF - 1)) 
++    fprintf(stderr,"overflow in vsnprintf (sgLog): %s",strerror(errno));
+@@ -90,2 +90,2 @@
+-  if(vsprintf(msg, format, ap) > (MAX_BUF - 1)) 
+-    sgLogFatalError("overflow in vsprintf (sgLogError): %s",strerror(errno));
++  if(vsnprintf(msg, MAX_BUF, format, ap) > (MAX_BUF - 1)) 
++    sgLog(globalErrorLog, "overflow in vsnprintf (sgLogError): %s",strerror(errno));
+@@ -107,2 +107,2 @@
+-  if(vsprintf(msg, format, ap) > (MAX_BUF - 1)) 
+-    return;
++  if(vsnprintf(msg, MAX_BUF, format, ap) > (MAX_BUF - 1)) 
++    sgLog(globalErrorLog, "overflow in vsnprintf (sgLogError): %s",strerror(errno));
