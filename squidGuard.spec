@@ -1,3 +1,4 @@
+%define _hardened_build 1
 %define _default_patch_fuzz 2
 # $Id: squidGuard.spec,v 1.22 2009/10/26 13:30:17 limb Exp $
 
@@ -7,7 +8,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		10%{?dist}
+Release:		11%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -200,6 +201,9 @@ fi
 %{_localstatedir}/log/squid/squidGuard.log
 
 %changelog
+* Fri Apr 13 2012 Jon Ciesla <limburgher@gmail.com> - 1.4-11
+- Add hardened build.
+
 * Sat Jan 14 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.4-10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
