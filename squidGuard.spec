@@ -8,7 +8,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		11%{?dist}
+Release:		12%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -42,8 +42,7 @@ Patch8:			squidGuard-1.4-20091019.patch
 URL:			http://www.squidguard.org/
 
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:	bison, byacc, openldap-devel, flex, compat-db46
-#put db4-devel back and remove compat-db46 once release > 1.4
+BuildRequires:	bison, byacc, openldap-devel, flex, libdb-devel
 Requires:		squid
 #Requires(post):	%{_bindir}/chcon
 Requires(post):	/sbin/chkconfig
@@ -201,6 +200,9 @@ fi
 %{_localstatedir}/log/squid/squidGuard.log
 
 %changelog
+* Mon Apr 16 2012 Jon Ciesla <limburgher@gmail.com> - 1.4-12
+- Build against libdb again.
+
 * Fri Apr 13 2012 Jon Ciesla <limburgher@gmail.com> - 1.4-11
 - Add hardened build.
 
