@@ -8,7 +8,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		12%{?dist}
+Release:		13%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -22,8 +22,12 @@ Source3:		http://cuda.port-aransas.k12.tx.us/squid-getlist.html
 # K12LTSP stuff
 Source100:		squidGuard.conf
 Source101:		update_squidguard_blacklists
-Source102:		squidguard
-Source103:		transparent-proxying
+#Source102:		squidguard
+#Source103:		transparent-proxying
+Source104:		squidGuard.service
+Source105:		transparent-proxying.service
+Source106:		squidGuard-helper
+Source107:		transparent-proxying-helper
 
 # SELinux (taken from K12LTSP package)
 #Source200:		squidGuard.te
@@ -45,7 +49,10 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	bison, byacc, openldap-devel, flex, libdb-devel
 Requires:		squid
 #Requires(post):	%{_bindir}/chcon
-Requires(post):	/sbin/chkconfig
+#Requires(post):	/sbin/chkconfig
+Requires(post): systemd-units
+Requires(preun): systemd-units
+Requires(postun): systemd-units
 
 %description
 squidGuard can be used to 
@@ -125,8 +132,14 @@ popd
 %{__install} contrib/hostbyname/hostbyname $RPM_BUILD_ROOT%{_bindir}
 %{__install} contrib/sgclean/sgclean $RPM_BUILD_ROOT%{_bindir}
 
-%{__install} -p -D -m 0755 %{SOURCE102} $RPM_BUILD_ROOT%{_initrddir}/squidGuard
-%{__install} -p -D -m 0755 %{SOURCE103} $RPM_BUILD_ROOT%{_initrddir}/transparent-proxying
+#%{__install} -p -D -m 0755 %{SOURCE102} $RPM_BUILD_ROOT%{_initrddir}/squidGuard
+#%{__install} -p -D -m 0755 %{SOURCE103} $RPM_BUILD_ROOT%{_initrddir}/transparent-proxying
+
+%{__install} -p -D -m 0644 %{SOURCE104} $RPM_BUILD_ROOT%{_unitdir}/squidGuard.service
+%{__install} -p -D -m 0644 %{SOURCE105} $RPM_BUILD_ROOT%{_unitdir}/transparent-proxying.service
+
+%{__install} -p -D -m 0744 %{SOURCE106} $RPM_BUILD_ROOT%{_bindir}/squidGuard-helper
+%{__install} -p -D -m 0744 %{SOURCE107} $RPM_BUILD_ROOT%{_bindir}/transparent-proxying-helper
 
 #pushd $RPM_BUILD_ROOT%{_dbhomedir}
 tar xfz $RPM_BUILD_ROOT%{_dbtopdir}/blacklists.tar.gz
@@ -148,18 +161,23 @@ ln -s ../squidGuard/squidGuard.log  $RPM_BUILD_ROOT%{_localstatedir}/log/squid/s
 #%{_bindir}/chcon -R system_u:object_r:squid_cache_t /var/squidGuard >/dev/null 2>&1
 #%{_bindir}/chcon -R system_u:object_r:squid_log_t /var/log/squidGuard >/dev/null 2>&1
 
-# do we need a new config file?
-if [ -s %{_sysconfdir}/squid/squidGuard.conf ]; then
-	CONFFILE="%{_sysconfdir}/squid/squidGuard.conf.rpmnew"
-    echo "/etc/squid/squidGuard.conf created as /etc/squid/squidGuard.conf.rpmnew"
-else
-	CONFFILE="/etc/squid/squidGuard.conf"
-fi
-cat %{_docdir}/%{name}-%{version}/squidGuard.conf.k12ltsp.template | \
-	sed s/SERVERNAME/$HOSTNAME/g > $CONFFILE
+## do we need a new config file?
+#if [ -s %{_sysconfdir}/squid/squidGuard.conf ]; then
+#	CONFFILE="%{_sysconfdir}/squid/squidGuard.conf.rpmnew"
+#    echo "/etc/squid/squidGuard.conf created as /etc/squid/squidGuard.conf.rpmnew"
+#else
+#	CONFFILE="/etc/squid/squidGuard.conf"
+#fi
+#cat %{_docdir}/%{name}-%{version}/squidGuard.conf.k12ltsp.template | \
+#	sed s/SERVERNAME/$HOSTNAME/g > $CONFFILE
 
-/sbin/chkconfig --add squidGuard
-/sbin/chkconfig --add transparent-proxying
+#/sbin/chkconfig --add squidGuard
+#/sbin/chkconfig --add transparent-proxying
+if [ $1 -eq 1 ] ; then 
+    # Initial installation 
+    /bin/systemctl daemon-reload >/dev/null 2>&1 || :
+fi
+
 
 # reload SELinux policies
 #echo "Loading new SELinux policy"
@@ -170,11 +188,40 @@ cat %{_docdir}/%{name}-%{version}/squidGuard.conf.k12ltsp.template | \
 #### End of %post
 
 %preun
-if [ $1 = 0 ] ; then
-    service squidGuard stop >/dev/null 2>&1
-    /sbin/chkconfig --del squidGuard
-	/sbin/chkconfig --del transparent-proxying
+#if [ $1 = 0 ] ; then
+#    service squidGuard stop >/dev/null 2>&1
+#    /sbin/chkconfig --del squidGuard
+#	/sbin/chkconfig --del transparent-proxying
+#fi
+if [ $1 -eq 0 ] ; then
+    # Package removal, not upgrade
+    /bin/systemctl --no-reload disable squidGuard.service > /dev/null 2>&1 || :
+    /bin/systemctl stop squidGuard.service > /dev/null 2>&1 || :
+    /bin/systemctl --no-reload disable transparent-proxying.service > /dev/null 2>&1 || :
+    /bin/systemctl stop transparent-proxying.service > /dev/null 2>&1 || :
 fi
+
+%postun
+/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+if [ $1 -ge 1 ] ; then
+    # Package upgrade, not uninstall
+    /bin/systemctl try-restart squidGuard.service >/dev/null 2>&1 || :
+    /bin/systemctl try-restart transparent-proxying.service >/dev/null 2>&1 || :
+fi
+
+%triggerun -- squidGuard < 1.4-13
+# Save the current service runlevel info
+# User must manually run systemd-sysv-convert --apply squidGuard
+# and systemd-sysv-convert --apply transparent-proxying
+# to migrate them to systemd targets
+/usr/bin/systemd-sysv-convert --save squidGuard >/dev/null 2>&1 ||:
+/usr/bin/systemd-sysv-convert --save transparent-proxying >/dev/null 2>&1 ||:
+
+# Run these because the SysV package being removed won't do them
+/sbin/chkconfig --del squidGuard >/dev/null 2>&1 || :
+/sbin/chkconfig --del transparent-proxying >/dev/null 2>&1 || :
+/bin/systemctl try-restart squidGuard.service >/dev/null 2>&1 || :
+/bin/systemctl try-restart transparent-proxying.service >/dev/null 2>&1 || :
 
 %files
 %defattr(-,root,root)
@@ -194,12 +241,16 @@ fi
 %attr(0755,root,root) %{_cgibin}/*.cgi
 %config(noreplace) %{_cgibin}/squidGuard.cgi
 %{_cgibin}/babel.*
-%{_initrddir}/squidGuard
-%{_initrddir}/transparent-proxying
+%{_unitdir}/squidGuard.service
+%{_unitdir}/transparent-proxying.service
 %{_localstatedir}/log/squidGuard
 %{_localstatedir}/log/squid/squidGuard.log
 
 %changelog
+* Tue Apr 17 2012 Jon Ciesla <limburgher@gmail.com> - 1.4-13
+- Migrate to systemd.
+- Stop messing with config noreplace for the config file in post.
+
 * Mon Apr 16 2012 Jon Ciesla <limburgher@gmail.com> - 1.4-12
 - Build against libdb again.
 

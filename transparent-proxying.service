@@ -1,0 +1,12 @@
+[Unit]
+Description=squid transparent proxying
+After=syslog.target squid.service
+
+[Service]
+Type=forking
+PrivateTmp=True
+ExecStart=/usr/bin/transparent-proxying-helper start
+ExecStop==/usr/bin/transparent-proxying-helper stop
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+[Unit]
+Description=Squid Internet Object Cache and squidGuard web filter
+After=syslog.target squid.service
+
+[Service]
+Type=forking
+PrivateTmp=True
+ExecStart=/usr/bin/squidGuard-helper start
+ExecStop==/usr/bin/squidGuard-helper stop
+
+[Install]
+WantedBy=multi-user.target
