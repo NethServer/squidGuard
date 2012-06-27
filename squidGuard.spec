@@ -8,7 +8,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		13%{?dist}
+Release:		14%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -99,8 +99,7 @@ Neither squidGuard nor Squid can be used to
 	--with-sg-config=%{_sysconfdir}/squid/squidGuard.conf \
 	--with-sg-logdir=%{_var}/log/squidGuard \
 	--with-sg-dbhome=%{_dbhomedir} \
-	--with-db-inc=%{_includedir}/db4.6.21 \
-	--with-db-lib=%{_libdir}/db4.6.21
+	--with-ldap=yes
 	
 #%{__make} %{?_smp_mflags}
 %{__make}
@@ -247,6 +246,10 @@ fi
 %{_localstatedir}/log/squid/squidGuard.log
 
 %changelog
+* Wed Jun 27 2012 Jon Ciesla <limburgher@gmail.com> - 1.4-14
+- Build with LDAP support, BZ 834916.
+- Dropped db4-isms.
+
 * Tue Apr 17 2012 Jon Ciesla <limburgher@gmail.com> - 1.4-13
 - Migrate to systemd.
 - Stop messing with config noreplace for the config file in post.
