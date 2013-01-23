@@ -8,7 +8,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		15%{?dist}
+Release:		16%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -42,6 +42,7 @@ Patch5:			squidGuard-makeinstall.patch
 #Patch6:			squidGuard-1.3-SG-2008-06-13.patch
 Patch7:			squidGuard-1.4-20091015.patch
 Patch8:			squidGuard-1.4-20091019.patch
+Patch9:			squidGuard-1.4-db5.patch
 
 URL:			http://www.squidguard.org/
 
@@ -90,6 +91,7 @@ Neither squidGuard nor Squid can be used to
 #%patch6 -p0
 %patch7 -p0
 %patch8 -p0
+%patch9 -p1
 
 %{__cp} %{SOURCE100} ./squidGuard.conf.k12ltsp.template
 %{__cp} %{SOURCE101} ./update_squidguard_blacklists.k12ltsp.sh
@@ -246,6 +248,9 @@ fi
 %{_localstatedir}/log/squid/squidGuard.log
 
 %changelog
+* Mon Jan 21 2013 Bojan Smojver <bojan@rexursive.com> - 1.4-16
+- Fix for Berkeley DB 5
+
 * Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.4-15
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
