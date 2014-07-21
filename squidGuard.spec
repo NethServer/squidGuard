@@ -8,7 +8,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		20%{?dist}
+Release:		20%{?dist}.1
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -101,6 +101,7 @@ Neither squidGuard nor Squid can be used to
 	--with-sg-config=%{_sysconfdir}/squid/squidGuard.conf \
 	--with-sg-logdir=%{_var}/log/squidGuard \
 	--with-sg-dbhome=%{_dbhomedir} \
+	--with-db-inc=%{_includedir}/libdb4 --with-db-lib=%{_libdir}/libdb4 \
 	--with-ldap=yes
 	
 #%{__make} %{?_smp_mflags}
@@ -248,6 +249,9 @@ fi
 %{_localstatedir}/log/squid/squidGuard.log
 
 %changelog
+* Mon Jul 21 2014 Jon Ciesla <limburgher@gmail.com> - 1.4-20.1
+- Fix for EL-7, BZ 1119950.
+
 * Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.4-20
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
