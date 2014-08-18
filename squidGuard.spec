@@ -8,7 +8,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		20%{?dist}
+Release:		21%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -248,6 +248,9 @@ fi
 %{_localstatedir}/log/squid/squidGuard.log
 
 %changelog
+* Mon Aug 18 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.4-21
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
 * Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.4-20
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
