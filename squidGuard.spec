@@ -8,7 +8,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		24%{?dist}
+Release:		25%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -18,6 +18,7 @@ Source0:		http://www.squidguard.org/Downloads/squidGuard-%{version}.tar.gz
 Source1:		squidGuard.logrotate
 Source2:		http://squidguard.mesd.k12.or.us/blacklists.tgz
 Source3:		http://cuda.port-aransas.k12.tx.us/squid-getlist.html
+Source4:		squidGuard-1.4-patch-20150201.tar.gz
 
 # K12LTSP stuff
 Source100:		squidGuard.conf
@@ -109,6 +110,9 @@ Neither squidGuard nor Squid can be used to
 pushd contrib
 %{__make} %{?_smp_mflags}
 popd
+
+#Apply squidGuard-1.4-patch-20150201.tar.gz
+tar -xzf %{SOURCE4} --overwrite -C samples/ --strip-components=1
 
 %install
 %{__rm} -rf $RPM_BUILD_ROOT
@@ -244,10 +248,16 @@ fi
 %{_cgibin}/babel.*
 %{_unitdir}/squidGuard.service
 %{_unitdir}/transparent-proxying.service
-%{_localstatedir}/log/squidGuard
-%{_localstatedir}/log/squid/squidGuard.log
+%attr(0755,squid,squid) %{_localstatedir}/log/squidGuard
+%attr(0755,squid,squid) %{_localstatedir}/log/squid/squidGuard.log
 
 %changelog
+* Tue Jun 21 2016 Jon Ciesla <limburgher@gmail.com> - 1.4-25
+- Patch for 20150201.
+- Fix log permissions.
+- logrotate correction.
+- Corrected config file.
+
 * Fri Feb 05 2016 Fedora Release Engineering <releng@fedoraproject.org> - 1.4-24
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
