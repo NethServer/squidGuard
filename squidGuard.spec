@@ -8,7 +8,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		20%{?dist}.1
+Release:		25%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -18,6 +18,7 @@ Source0:		http://www.squidguard.org/Downloads/squidGuard-%{version}.tar.gz
 Source1:		squidGuard.logrotate
 Source2:		http://squidguard.mesd.k12.or.us/blacklists.tgz
 Source3:		http://cuda.port-aransas.k12.tx.us/squid-getlist.html
+Source4:		squidGuard-1.4-patch-20150201.tar.gz
 
 # K12LTSP stuff
 Source100:		squidGuard.conf
@@ -110,6 +111,9 @@ Neither squidGuard nor Squid can be used to
 pushd contrib
 %{__make} %{?_smp_mflags}
 popd
+
+#Apply squidGuard-1.4-patch-20150201.tar.gz
+tar -xzf %{SOURCE4} --overwrite -C samples/ --strip-components=1
 
 %install
 %{__rm} -rf $RPM_BUILD_ROOT
@@ -245,12 +249,27 @@ fi
 %{_cgibin}/babel.*
 %{_unitdir}/squidGuard.service
 %{_unitdir}/transparent-proxying.service
-%{_localstatedir}/log/squidGuard
-%{_localstatedir}/log/squid/squidGuard.log
+%attr(0755,squid,squid) %{_localstatedir}/log/squidGuard
+%attr(0755,squid,squid) %{_localstatedir}/log/squid/squidGuard.log
 
 %changelog
-* Mon Jul 21 2014 Jon Ciesla <limburgher@gmail.com> - 1.4-20.1
-- Fix for EL-7, BZ 1119950.
+* Tue Jun 21 2016 Jon Ciesla <limburgher@gmail.com> - 1.4-25
+- Patch for 20150201.
+- Fix log permissions.
+- logrotate correction.
+- Corrected config file.
+
+* Fri Feb 05 2016 Fedora Release Engineering <releng@fedoraproject.org> - 1.4-24
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Fri Jun 19 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.4-23
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Thu Aug 21 2014 Kevin Fenzi <kevin@scrye.com> - 1.4-22
+- Rebuild for rpm bug 1131960
+
+* Mon Aug 18 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.4-21
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
 * Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.4-20
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild

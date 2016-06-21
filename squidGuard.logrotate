@@ -1,6 +1,5 @@
 /var/log/squidGuard/* {
     weekly
-    olddir /var/log/squidGuard/old
     compress
     notifempty
     missingok
