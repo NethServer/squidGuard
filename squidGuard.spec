@@ -8,7 +8,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		25%{?dist}
+Release:		26%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -252,6 +252,9 @@ fi
 %attr(0755,squid,squid) %{_localstatedir}/log/squid/squidGuard.log
 
 %changelog
+* Tue Jun 21 2016 Jon Ciesla <limburgher@gmail.com> - 1.4-26
+- Fix unitfile typo.
+
 * Tue Jun 21 2016 Jon Ciesla <limburgher@gmail.com> - 1.4-25
 - Patch for 20150201.
 - Fix log permissions.
