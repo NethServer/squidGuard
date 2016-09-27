@@ -8,7 +8,7 @@
 
 Name:			squidGuard
 Version:		1.4
-Release:		26%{?dist}
+Release:		26.1%{?dist}
 Summary:		Filter, redirector and access controller plugin for squid
 
 Group:			System Environment/Daemons
@@ -44,6 +44,7 @@ Patch5:			squidGuard-makeinstall.patch
 Patch7:			squidGuard-1.4-20091015.patch
 Patch8:			squidGuard-1.4-20091019.patch
 Patch9:			squidGuard-1.4-db5.patch
+Patch10:		squidGuard-1.4-bug1253662.patch
 
 URL:			http://www.squidguard.org/
 
@@ -93,6 +94,7 @@ Neither squidGuard nor Squid can be used to
 %patch7 -p0
 %patch8 -p0
 %patch9 -p1
+%patch10 -p1
 
 %{__cp} %{SOURCE100} ./squidGuard.conf.k12ltsp.template
 %{__cp} %{SOURCE101} ./update_squidguard_blacklists.k12ltsp.sh
@@ -253,6 +255,9 @@ fi
 %attr(0755,squid,squid) %{_localstatedir}/log/squid/squidGuard.log
 
 %changelog
+* Tue Sep 27 2016 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4-26.1.ns7
+- Apply upstream patch https://bugzilla.redhat.com/show_bug.cgi?id=1253662 https://github.com/NethServer/dev/issues/5117
+
 * Tue Jun 21 2016 Jon Ciesla <limburgher@gmail.com> - 1.4-26
 - Fix unitfile typo.
 
